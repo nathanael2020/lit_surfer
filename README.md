@@ -46,9 +46,9 @@ memory = content + abstract
 
 2. The first 2,000 and last 2,000 characters (before the References section) along with the abstract and the six-paragraph summary are passed to the LLM:
 memory = content + abstract + first summary
-```
-f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'"
-```
+
+| f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'" |
+
 3. The first 2,000 and last 2,000 characters (before the References section) along with the abstract, the first six-paragraph summary, and the critique are passed to the LLM:
 ```
 {memory}\n\nReview the original paper, the draft summary, and the critique (points of needed improvement). Rewrite the summary in exactly six paragraphs considering these points. Then rewrite it again 4 times, improving it each time, and really considering the paper with a skeptical eye. Be sure to check all your facts by thoroughly reviewing the paper. Respond only with your best final draft of the six paragraphs, not the first three revisions. Preface your response with 'Draft Summary:\n\n'"

@@ -43,8 +43,6 @@ client = OpenAI(
 
 missing_papers_list = []
 
-
-
 def download_pdfs(papers, download_folder=f"{file_prefix}/downloads"):
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
@@ -85,13 +83,6 @@ def move_pdf_to_downloaded_pdfs(pdf_file):
         shutil.move(src, dst)
         print(f"Moved {pdf_file} to downloaded_pdfs")
 
-    # pdf_files = list_pdf_filenames(f"{file_prefix}downloads")
-    # for pdf_file in pdf_files:
-    #     src = os.path.join(f"{file_prefix}downloads", pdf_file)
-    #     dst = os.path.join(downloaded_pdfs_dir, pdf_file)
-    #     shutil.move(src, dst)
-    #     print(f"Moved {pdf_file} to downloaded_pdfs")
-
 def query_arxiv(search_term, start_num, max_results):
 
     def make_request(url):
@@ -102,7 +93,7 @@ def query_arxiv(search_term, start_num, max_results):
         return response
     print(max_results)
     base_url = "http://export.arxiv.org/api/query?"
-    query = f"search_query=abs:{search_term}&sortBy=submittedDate&sortOrder=descending&start={start_num}&max_results={max_results}"
+    query = f"search_query=all:{search_term}&sortBy=submittedDate&sortOrder=descending&start={start_num}&max_results={max_results}"
     cleaned_query = query.replace('"', '').replace("''", "'")
     
     response = make_request(base_url + cleaned_query)
@@ -141,40 +132,31 @@ def query_arxiv(search_term, start_num, max_results):
     return papers
 
 def create_summarizer_prompt(memory):
-    """Creates a prompt based on the recent memory."""
-    #
-    # Create a prompt to condense the paper into a six-paragraph summary (first summarizer GPT iteration)
-    #
-    return f"{memory}\n\nSummarize this material in no more than six paragraphs, first two paragraphs summarizing the research and results, then two more paragraphs describe how this research fits into the existing body of research. Then include two more paragraphs critiquing the research. Before responding, rewrite it at least 3 times, improving it each time. Think deeply on the research context, the achievements of this research, what the authors' peers would find lacking, and what a skeptical critic would admit is valuable. Respond with the best final draft of your six paragraph summary. Preface your response with 'Summary:\n\n'"
+    return f"{memory}\n\nSummarize this material in no more than six " \
+        "paragraphs, first two paragraphs summarizing the research and " \
+        "results, then two more paragraphs describe how this research fits " \
+        "into the existing body of research. Then include two more " \
+        "paragraphs critiquing the research. Before responding, rewrite " \
+        "it at least 3 times, improving it each time. Think deeply on the " \
+        "research context, the achievements of this research, what the " \
+        "authors peers would find lacking, and what a skeptical critic " \
+         "would admit is valuable. Respond with the best final draft of " \
+        "your six paragraph summary. Preface your response with " \
+        "'Summary:\n\n'"
 
 def create_summary_critic_prompt(memory):
-    """Creates a prompt based on the recent memory."""
-    #
-    # Create a prompt to critique the first summary draft (Critic GPT iteration)
-    #
-    return f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'"
+    return f"{memory}\n\nReview the original paper and evaluate the quality " \
+    "of the summary. Identify 5 points of weakness that need improvement. " \
+    "Respond with details on how to improve the summary. Don't resummarize " \
+    "yourself. Preface your response with 'Critique:\n\n'"
 
 def create_improved_summary_prompt(memory):
-    """Creates a prompt based on the recent memory."""
-    #
-    # Create a prompt to take the critiques from the  critic and improve the summary draft with four redrafts (second summarizer GPT iteration)
-    #
     return f"{memory}\n\nReview the original paper, the first draft summary, and the points of needed improvement. Rewrite the summary in exactly six paragraphs considering these points. Then rewrite it again 4 times, improving it each time, and really considering the paper with a skeptical eye. Be sure to check all your facts by thoroughly reviewing the paper. Respond only with your best final draft of the six paragraphs, not the first three revisions."
 
 def create_final_summary_prompt(memory):
-    """Creates a prompt based on the recent memory."""
-    #
-    # Create a prompt to improved summary draft and condense it further to exactly four paragraphs (third summarizer GPT iteration)
-    # {memory} here is the original paper body and the six-paragraph summary from create_improved_summary prompt.
-    #
     return f"{memory}\nReview the paper and the draft summary and refine the summary further, condense it to exactly four very well-written paragraphs. Be sure to check all your facts by thoroughly reviewing the paper and rewriting a final time. Respond only with your four-paragraph final summary."
 
 def create_final_tldr_prompt(memory):
-    """Creates a prompt based on the recent memory."""
-    #
-    # Create a prompt to condense the paper into a three-sentence tl;dr (fourth summarizer GPT iteration)
-    # {memory} here is the original paper body and the four-paragraph summary from create_final_summary prompt.
-    #
     return f"{memory}\nReview the paper and the draft summary and refine the summary further. Be sure to check all your facts by thoroughly reviewing the paper. Reply with a three sentence 'tl;dr' summary explaining where this fits into the broader field of research and why it's important, as if you're talking to a general audience. No more than three sentences, and no more than one paragraph."
 
 def call_gpt_summarizer(prompt):
@@ -301,7 +283,6 @@ def extract_with_pypdf(pdf_path, output_json_filepath):
         
         # Remove the file extension
         paper_id = '.'.join(filename.split('.')[:-1])
-#        paper_id = filename.split('.')[0]
 
         # Add to the missing papers list
         missing_papers_list.append(paper_id)
@@ -313,7 +294,6 @@ def extract_with_pypdf(pdf_path, output_json_filepath):
     Writes the extracted content to a JSON file.
     """
     os.makedirs(output_dir, exist_ok=True)
-    # json_file_path = os.path.join(output_dir, f'{output_dir}.json')
     print(output_json_filepath)
     with open(output_json_filepath, 'w') as json_file:
         json.dump({"body": content}, json_file)
@@ -336,12 +316,6 @@ def main(string_arg, start_num_arg, int_arg):
 
     papers = query_arxiv(search_term, start_num=start_num_arg, max_results=int_arg)
 
-    # Get the current date and format it as YYYYMMDD
-    current_dt = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    # Create the filename
-    #summaries_filename = f"{current_date}_summaries.json"
-
     print(papers)
 
     cleaned_search_term = search_term.replace("'","").replace('"','')                                                      
@@ -353,7 +327,6 @@ def main(string_arg, start_num_arg, int_arg):
     download_pdfs(papers)
 
     pdf_filenames = list_pdf_filenames()
-    #print("PDF files in the current directory:")
 
     for pdf_fn in pdf_filenames:
         print(pdf_fn)
@@ -371,10 +344,8 @@ def main(string_arg, start_num_arg, int_arg):
         pdf_filepath = f"{file_prefix}/downloads/{file}.pdf"
         pdf_file = f"{file}.pdf"
 
-#        command = ['/home/nmiksis_gmail_com/.venv/bin/appjsonify', pdf_filepath, '/home/nmiksis_gmail_com/jsonapp/jsonhandler/', '--paper_type', f'{paper_arg}']
-#        print(command)
-
         # Try with appjsonify
+#        command = ['/home/nmiksis_gmail_com/.venv/bin/appjsonify', pdf_filepath, '/home/nmiksis_gmail_com/jsonapp/jsonhandler/', '--paper_type', f'{paper_arg}']
         # if not os.path.exists(json_filename):
         #     subprocess.run(command)
 
@@ -400,57 +371,31 @@ def main(string_arg, start_num_arg, int_arg):
 
         json_content = read_json_file(f"{file_prefix}/{file}/{file}.json")
 
-        # if os.path.exists(json_filename):
-        #     os.remove(json_filename)
-
         if os.path.exists(json_filename):
-            # Remove the JSON file
             os.remove(json_filename)
 
-            # Directory path
+        if os.path.exists(json_filename):
+            os.remove(json_filename)
+
             directory_path = f"{file_prefix}/{file}/"
 
             # Check if the directory exists and then remove it
             if os.path.isdir(directory_path):
                 shutil.rmtree(directory_path)
                 
-#        print(papers)
-#        print(file)
-
-        # Extract details
-        # details = extract_paper_details(papers, file)
-            
-        # print(papers)
         abstract = next((paper['abstract'] for paper in papers if paper['pdf_url'].endswith(f'{file}')), "Abstract not found.")
-        # title = next((paper['title'] for paper in papers if paper['pdf_url'].endswith(f'{file}')), "Title not found.")
-        # authors = next((paper['authors'] for paper in papers if paper['pdf_url'].endswith(f'{file}')), "Authors not found.")
-        # pdf_url = next((paper['pdf_url'] for paper in papers if paper['pdf_url'].endswith(f'{file}')), "PDF url not found.")
-        # published_date = next((paper['published_date'] for paper in papers if paper['pdf_url'].endswith(f'{file}')), "published_date url not found.")
-
-        # print(abstract)
-        # print(title)
-        # print(authors)
-        # print(pdf_url)
 
         prompt = create_summarizer_prompt(f"{extract_content(json_content)}, {abstract}")
         first_summary_response = call_gpt_summarizer(prompt)
-        # print(response)
         prompt = create_summary_critic_prompt(f"{extract_content(json_content)}, {abstract}, {first_summary_response}")
         critic_response = call_gpt_summarizer(prompt)
-        # print(response)
         prompt = create_improved_summary_prompt(f"{extract_content(json_content)}, {abstract}, {first_summary_response}, {critic_response}")
         response = call_gpt_summarizer(prompt)
-        # print(response)
         prompt = create_final_summary_prompt(f"{extract_content(json_content)}, {response}")
         response = call_gpt_summarizer(prompt)
 
         prompt = create_final_tldr_prompt(f"{extract_content(json_content)}, {response}")
         tldr = call_gpt_summarizer(prompt)
-        # print(response)
-        
-        # response = "placeholder"
-
-#        print(email_body)
 
         # Check if 'foo' key exists in processed_data
         if file in processed_data:
@@ -465,7 +410,7 @@ def main(string_arg, start_num_arg, int_arg):
         with open(processed_data_filepath, 'w') as file:
             json.dump(processed_data, file, indent=4)
 
-#remove missing papers from processed_data
+    # remove missing papers from processed_data
             
     for missing_paper in missing_papers_list:
 
@@ -499,7 +444,6 @@ def main(string_arg, start_num_arg, int_arg):
 
         for paper in processed_data:
 
-            # file = paper['pdf_url'].split('/')[-1]  # Removing '.pdf' from the url
             formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
 
             email_body += f"""
@@ -510,9 +454,6 @@ def main(string_arg, start_num_arg, int_arg):
         email_body += "***************** Longer Summaries ****************\n"
 
         for paper in processed_data:
-
-            # paper_details = processed_data[paper_id]  # Access the paper's details
-            # file = paper_details['pdf_url'].split('/')[-1]  # Extracting the filename from the URL
             
             formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
 
@@ -529,12 +470,7 @@ def main(string_arg, start_num_arg, int_arg):
         smtp_port = 587  # or 25, or 465 (for SSL)
         smtp_user = sender_email
         smtp_password = google_password
-
-        # Email content
-    #    sender_email = smtp_user
-        print(smtp_user, " ", sender_email)
         
-    #    receiver_email = email
         subject = f"Arxiv GPT Summaries: {search_term} (papers {start_num_arg + 1} to {start_num_arg + int_arg})"
 
         if papers == {}:
@@ -550,7 +486,6 @@ def main(string_arg, start_num_arg, int_arg):
         message["To"] = receiver_email
 
         # Attach both plain text and HTML versions
-        #message.attach(MIMEText(text_content, "plain"))
         message.attach(MIMEText(html_content, "html"))
 
         if papers != {}:
@@ -570,10 +505,6 @@ def main(string_arg, start_num_arg, int_arg):
                 server.sendmail(sender_email, receiver_email, message.as_string())
 
             print("Email sent, but no papers returned.")
-
-    # Place this call at the end of your script
-#    generate_requirements_file()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Python script with three arguments.')

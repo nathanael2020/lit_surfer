@@ -63,6 +63,9 @@ f"{memory}\n\nReview the original paper and evaluate the quality of the summary.
 ```
 {memory}\nReview the paper and the draft summary and refine the summary further. Be sure to check all your facts by thoroughly reviewing the paper. Reply with a three sentence 'tl;dr' summary explaining where this fits into the broader field of research and why it's important, as if you're talking to a general audience. No more than three sentences, and no more than one paragraph.
 ```
+# Future Improvements:
+- For long papers, the middle sections could be separately read and summarized by the LLM, rather than only excerpting the beginning and end by character count.
+- For papers with meaningful graphical and tabular content that isn't properly summarized, use `appjsonify` to extract all material and automatically parse and review the content there.
 
 ## Contribution
 Contributions are welcome. Fork the repository and submit pull requests.

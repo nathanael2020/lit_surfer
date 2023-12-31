@@ -41,9 +41,9 @@ python lit_surfer.py 'biological+AND+neural+AND+agent 0 10
 Each paper is summarized in five steps:
 1. The first 2,000 and last 2,000 characters (before the References section) along with the abstract are passed to the LLM:
 memory = content + abstract
-```
-f"{memory}\n\nSummarize this material in no more than six paragraphs, first two paragraphs summarizing the research and results, then two more paragraphs describe how this research fits into the existing body of research. Then include two more paragraphs critiquing the research. Before responding, rewrite it at least 3 times, improving it each time. Think deeply on the research context, the achievements of this research, what the authors' peers would find lacking, and what a skeptical critic would admit is valuable. Respond with the best final draft of your six paragraph summary. Preface your response with 'Draft Summary:\n\n'"
-```
+
+> f"{memory}\n\nSummarize this material in no more than six paragraphs, first two paragraphs summarizing the research and results, then two more paragraphs describe how this research fits into the existing body of research. Then include two more paragraphs critiquing the research. Before responding, rewrite it at least 3 times, improving it each time. Think deeply on the research context, the achievements of this research, what the authors' peers would find lacking, and what a skeptical critic would admit is valuable. Respond with the best final draft of your six paragraph summary. Preface your response with 'Draft Summary:\n\n'"
+
 2. The first 2,000 and last 2,000 characters (before the References section) along with the abstract and the six-paragraph summary are passed to the LLM:
 memory = content + abstract + first summary
 ```

@@ -47,7 +47,7 @@ memory = content + abstract
 2. The first 2,000 and last 2,000 characters (before the References section) along with the abstract and the six-paragraph summary are passed to the LLM:
 memory = content + abstract + first summary
 
-| f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'" |
+`f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'"`
 
 3. The first 2,000 and last 2,000 characters (before the References section) along with the abstract, the first six-paragraph summary, and the critique are passed to the LLM:
 ```

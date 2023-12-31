@@ -3,6 +3,7 @@
 .DS_Store
 *.log
 /downloaded_pdfs/*
+/downloads
 *.json
 .venv/
 

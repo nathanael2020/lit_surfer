@@ -20,7 +20,7 @@ together_api = os.getenv('TOGETHER_API_KEY')
 google_password = os.getenv('GOOGLE_PASSWORD')
 receiver_email = os.getenv('RECEIVER_EMAIL')
 sender_email = os.getenv('SENDER_EMAIL')
-file_prefix = os.getenv('FILE_PREFIX')
+file_prefix = os.getenv('FILE_PREFIX') #usage /path/to/lit_surfer
 
 print(sender_email)
 
@@ -79,10 +79,11 @@ def download_pdfs(papers, download_folder=f"{file_prefix}downloads"):
 # Add a function to move PDFs from downloads to downloaded_pdfs
 def move_pdf_to_downloaded_pdfs(pdf_file):
 
-    src = os.path.join(f"{file_prefix}downloads", pdf_file)
-    dst = os.path.join(downloaded_pdfs_dir, pdf_file)
-    shutil.move(src, dst)
-    print(f"Moved {pdf_file} to downloaded_pdfs")
+    if os.path.exists(os.path.join(f"{file_prefix}downloads", pdf_file)):
+        src = os.path.join(f"{file_prefix}downloads", pdf_file)
+        dst = os.path.join(downloaded_pdfs_dir, pdf_file)
+        shutil.move(src, dst)
+        print(f"Moved {pdf_file} to downloaded_pdfs")
 
     # pdf_files = list_pdf_filenames(f"{file_prefix}downloads")
     # for pdf_file in pdf_files:
@@ -345,7 +346,7 @@ def main(string_arg, start_num_arg, int_arg):
 
     cleaned_search_term = search_term.replace("'","").replace('"','')                                                      
 
-    processed_data_filepath = f"{file_prefix}{cleaned_search_term}_{int_arg}_processed_api_data.json"
+    processed_data_filepath = f"{file_prefix}/{cleaned_search_term}_{int_arg}_processed_api_data.json"
 
     process_and_save_api_response(papers, processed_data_filepath, string_arg, int_arg)
 
@@ -363,11 +364,11 @@ def main(string_arg, start_num_arg, int_arg):
         
         processed_data = read_json_file(processed_data_filepath)
 
-        json_filename = f"{file_prefix}{file}/{file}.json"
+        json_filename = f"{file_prefix}/{file}/{file}.json"
 
         print(json_filename)
 
-        pdf_filepath = f"{file_prefix}downloads/{file}.pdf"
+        pdf_filepath = f"{file_prefix}/downloads/{file}.pdf"
         pdf_file = f"{file}.pdf"
 
 #        command = ['/home/nmiksis_gmail_com/.venv/bin/appjsonify', pdf_filepath, '/home/nmiksis_gmail_com/jsonapp/jsonhandler/', '--paper_type', f'{paper_arg}']
@@ -397,7 +398,7 @@ def main(string_arg, start_num_arg, int_arg):
 
             continue
 
-        json_content = read_json_file(f"{file_prefix}{file}/{file}.json")
+        json_content = read_json_file(f"{file_prefix}/{file}/{file}.json")
 
         # if os.path.exists(json_filename):
         #     os.remove(json_filename)
@@ -407,7 +408,7 @@ def main(string_arg, start_num_arg, int_arg):
             os.remove(json_filename)
 
             # Directory path
-            directory_path = f"{file_prefix}{file}/"
+            directory_path = f"{file_prefix}/{file}/"
 
             # Check if the directory exists and then remove it
             if os.path.isdir(directory_path):

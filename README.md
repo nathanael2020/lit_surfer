@@ -116,7 +116,7 @@ Each paper is summarized in five steps:
 
 # Future Improvements:
 - For long papers, the middle sections could be separately read and summarized by the LLM, rather than only excerpting the beginning and end by character count.
-- For papers with meaningful graphical and tabular content that isn't sufficiently summarized in the original paper, use `appjsonify` to extract all material and automatically parse and review the content there using an image recognition and analysis program.
+- For papers with meaningful graphical and tabular content that isn't sufficiently summarized in the original paper, use [appjsonify](https://github.com/hitachi-nlp/appjsonify) to extract all material and automatically parse and review the content there using an image recognition and analysis program. Read more here: [appjsonify](https://github.com/hitachi-nlp/appjsonify).
 
 ## Contribution
 Contributions are welcome. Fork the repository and submit pull requests.

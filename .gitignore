@@ -1,0 +1,9 @@
+.env
+.md
+.DS_Store
+*.log
+/downloaded_pdfs/*
+*.json
+.venv/
+
+!README.md

@@ -39,6 +39,32 @@ search_term = ''biological+AND+neural+AND+agent'
 start = 0
 max_results = 10
 ```
+## Optional Usage
+If you don't want to use the email feature, leave the google password out of your .env file. The results of your query will be saved to a json file in the lit_surfer directory.
+
+```
+# biological+AND+neural+AND+agent_10_processed_api_data.json
+
+{
+    "2312.17179v1": {
+        "title": [Going Green in RAN Slicing]],
+        "authors": [
+            "Hnin Pann Phyu",
+            "Razvan Stanica",
+            "Diala Naboulsi",
+            "Gwenael Poitau"
+        ],
+        "abstract": [],
+        "published_date": []],
+        "scraped_time": []],
+        "pdf_url": "http://arxiv.org/pdf/2312.17179v1",
+        "body": [],
+        "gpt_response": []
+         "tldr": []
+    }
+}
+
+```
 ## Configuration
 - Set API keys and email credentials in `.env` file.
 ```

@@ -25,7 +25,7 @@ file_prefix = os.getenv('FILE_PREFIX') #usage /path/to/lit_surfer
 print(sender_email)
 
 # Define the downloaded_pdfs directory
-downloaded_pdfs_dir = f"{file_prefix}downloaded_pdfs/"
+downloaded_pdfs_dir = f"{file_prefix}/downloaded_pdfs/"
 language_model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 #language_model = "gpt-4-1106-preview"
 api_base_url = "https://api.together.xyz"
@@ -45,7 +45,7 @@ missing_papers_list = []
 
 
 
-def download_pdfs(papers, download_folder=f"{file_prefix}downloads"):
+def download_pdfs(papers, download_folder=f"{file_prefix}/downloads"):
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
 
@@ -485,93 +485,94 @@ def main(string_arg, start_num_arg, int_arg):
         with open(processed_data_filepath, 'w') as file:
             json.dump(processed_data, file, indent=4)
 
-    email_body = ""
+    if google_password:
+        email_body = ""
 
-    # write tldrs to email body
+        # write tldrs to email body
 
-    processed_data = read_json_file(processed_data_filepath)
-    print(processed_data)
+        processed_data = read_json_file(processed_data_filepath)
+        print(processed_data)
 
-    papers = processed_data
-    print(papers)
-    email_body += "********************** TL;DRs *********************\n"
+        papers = processed_data
+        print(papers)
+        email_body += "********************** TL;DRs *********************\n"
 
-    for paper in processed_data:
+        for paper in processed_data:
 
-        # file = paper['pdf_url'].split('/')[-1]  # Removing '.pdf' from the url
-        formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
+            # file = paper['pdf_url'].split('/')[-1]  # Removing '.pdf' from the url
+            formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
 
-        email_body += f"""
-        Title: {processed_data[paper]['title']} ({formatted_date})\n
-        Tl;dr: {processed_data[paper]['tldr']}\n
-        """
-    
-    email_body += "***************** Longer Summaries ****************\n"
-
-    for paper in processed_data:
-
-        # paper_details = processed_data[paper_id]  # Access the paper's details
-        # file = paper_details['pdf_url'].split('/')[-1]  # Extracting the filename from the URL
+            email_body += f"""
+            Title: {processed_data[paper]['title']} ({formatted_date})\n
+            Tl;dr: {processed_data[paper]['tldr']}\n
+            """
         
-        formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
+        email_body += "***************** Longer Summaries ****************\n"
 
-        email_body += f"""
-        Title: {processed_data[paper]['title']}\n
-        Authors: {processed_data[paper]['authors']}\n
-        Published Date: {formatted_date}\n
-        PDF URL: {processed_data[paper]['pdf_url']}\n
-        GPT Summary: {processed_data[paper]['gpt_response']}\n
-        **************************************************\n\n
-        """
+        for paper in processed_data:
 
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587  # or 25, or 465 (for SSL)
-    smtp_user = sender_email
-    smtp_password = google_password
+            # paper_details = processed_data[paper_id]  # Access the paper's details
+            # file = paper_details['pdf_url'].split('/')[-1]  # Extracting the filename from the URL
+            
+            formatted_date = datetime.datetime.fromisoformat(processed_data[paper]['published_date'].rstrip("Z")).strftime("%m/%d/%Y")
 
-    # Email content
-#    sender_email = smtp_user
-    print(smtp_user, " ", sender_email)
-    
-#    receiver_email = email
-    subject = f"Arxiv GPT Summaries: {search_term} (papers {start_num_arg + 1} to {start_num_arg + int_arg})"
+            email_body += f"""
+            Title: {processed_data[paper]['title']}\n
+            Authors: {processed_data[paper]['authors']}\n
+            Published Date: {formatted_date}\n
+            PDF URL: {processed_data[paper]['pdf_url']}\n
+            GPT Summary: {processed_data[paper]['gpt_response']}\n
+            **************************************************\n\n
+            """
 
-    if papers == {}:
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587  # or 25, or 465 (for SSL)
+        smtp_user = sender_email
+        smtp_password = google_password
 
-        email_body = f"No results returned for {search_term}"
-
-    text_content = email_body
-    html_content = text_content.replace("\n", "<br>")
-
-    message = MIMEMultipart("alternative")
-    message["Subject"] = subject
-    message["From"] = sender_email
-    message["To"] = receiver_email
-
-    # Attach both plain text and HTML versions
-    #message.attach(MIMEText(text_content, "plain"))
-    message.attach(MIMEText(html_content, "html"))
-
-    if papers != {}:
-        # Send the email
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()  # Secure the connection
-            server.login(smtp_user, smtp_password)
-            server.sendmail(sender_email, receiver_email, message.as_string())
-
-        print("Email sent successfully!")
-
-    else:
+        # Email content
+    #    sender_email = smtp_user
+        print(smtp_user, " ", sender_email)
         
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()  # Secure the connection
-            server.login(smtp_user, smtp_password)
-            server.sendmail(sender_email, receiver_email, message.as_string())
+    #    receiver_email = email
+        subject = f"Arxiv GPT Summaries: {search_term} (papers {start_num_arg + 1} to {start_num_arg + int_arg})"
 
-        print("Email sent, but no papers returned.")
+        if papers == {}:
+
+            email_body = f"No results returned for {search_term}"
+
+        text_content = email_body
+        html_content = text_content.replace("\n", "<br>")
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = subject
+        message["From"] = sender_email
+        message["To"] = receiver_email
+
+        # Attach both plain text and HTML versions
+        #message.attach(MIMEText(text_content, "plain"))
+        message.attach(MIMEText(html_content, "html"))
+
+        if papers != {}:
+            # Send the email
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()  # Secure the connection
+                server.login(smtp_user, smtp_password)
+                server.sendmail(sender_email, receiver_email, message.as_string())
+
+            print("Email sent successfully!")
+
+        else:
+            
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()  # Secure the connection
+                server.login(smtp_user, smtp_password)
+                server.sendmail(sender_email, receiver_email, message.as_string())
+
+            print("Email sent, but no papers returned.")
 
     # Place this call at the end of your script
-    generate_requirements_file()
+#    generate_requirements_file()
 
 
 if __name__ == "__main__":

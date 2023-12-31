@@ -151,7 +151,7 @@ def create_summary_critic_prompt(memory):
     #
     # Create a prompt to critique the first summary draft (Critic GPT iteration)
     #
-    return f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself."
+    return f"{memory}\n\nReview the original paper and evaluate the quality of the summary. Identify 5 points of weakness that need improvement. Respond with details on how to improve the summary. Don't resummarize yourself. Preface your response with 'Critique:\n\n'"
 
 def create_improved_summary_prompt(memory):
     """Creates a prompt based on the recent memory."""
@@ -432,12 +432,12 @@ def main(string_arg, start_num_arg, int_arg):
         # print(pdf_url)
 
         prompt = create_summarizer_prompt(f"{extract_content(json_content)}, {abstract}")
-        response = call_gpt_summarizer(prompt)
+        first_summary_response = call_gpt_summarizer(prompt)
         # print(response)
-        prompt = create_summary_critic_prompt(f"{extract_content(json_content)}, {abstract}, {response}")
-        response = call_gpt_summarizer(prompt)
+        prompt = create_summary_critic_prompt(f"{extract_content(json_content)}, {abstract}, {first_summary_response}")
+        critic_response = call_gpt_summarizer(prompt)
         # print(response)
-        prompt = create_improved_summary_prompt(f"{extract_content(json_content)}, {abstract}, {response}")
+        prompt = create_improved_summary_prompt(f"{extract_content(json_content)}, {abstract}, {first_summary_response}, {critic_response}")
         response = call_gpt_summarizer(prompt)
         # print(response)
         prompt = create_final_summary_prompt(f"{extract_content(json_content)}, {response}")

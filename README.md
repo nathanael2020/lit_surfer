@@ -123,3 +123,6 @@ Contributions are welcome. Fork the repository and submit pull requests.
 
 ## License
 MIT Open License
+
+## Contact
+nathanael@astrowaffle.anonaddy.com

@@ -1,7 +1,9 @@
 # lit_surfer.py
 
 ## Overview
-`lit_surfer.py` is a Python script designed for academic research automation. It searches, downloads, summarizes, and emails summaries of academic papers from arXiv. The script uses OpenAI's GPT models for generating summaries and critiques.
+`lit_surfer.py` is a Python script designed for academic research automation. It searches, downloads, summarizes, and emails summaries of academic papers from arXiv. The script uses OpenAI's API python package to connect with the open source Mixtral-8x7B-Instruct-v0.1 for generating summaries and critiques.
+
+Optionally, you can uncomment the openai api url and model to use GPT-4.
 
 ## Features
 - **Automated arXiv Paper Search**: Search for papers on arXiv using user-defined terms.
@@ -12,11 +14,13 @@
 ## Requirements
 - Python 3.x (I used 3.11.6)
 - Packages: `requests`, `xml.etree.ElementTree`, `json`, `os`, `subprocess`, `shutil`, `smtplib`, `argparse`, `PyPDF2`, `dotenv`, `openai`.
+- API Keys (for together.ai and openai.com)
+- Google application password to support emailing the summaries.
 
 ## Installation
 1. Clone the repository:
 ```
-git clone [repository URL]
+git clone https://github.com/nathanael2020/lit_surfer.git
 ```
 2. Install dependencies:
 ```

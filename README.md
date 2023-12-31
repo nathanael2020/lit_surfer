@@ -41,6 +41,16 @@ max_results = 10
 ```
 ## Configuration
 - Set API keys and email credentials in `.env` file.
+```
+# .env
+
+OPEN_AI_API_KEY=[YOUR_OPENAI_KEY]
+TOGETHER_API_KEY=[YOUR_TOGETHER_API_KEY]
+GOOGLE_PASSWORD=[YOUR_GOOGLE_PASSWORD]
+RECEIVER_EMAIL=[user@example.com]
+SENDER_EMAIL=[user_example.com]
+FILE_PREFIX='/path/to/lit_surfer'
+```
 - Customize search terms in the command line arguments and the number of papers to process.
 
 ## LLM Summarization
